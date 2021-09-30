@@ -33,6 +33,7 @@
 #define _NUMBER_H_
   
 // errors, warnings
+#include <stdint.h>
 
 #define BC_ERROR_OUT_OF_MEMORY 0
 #define BC_ERROR_EXPONENT_TOO_LARGE_IN_RAISE 1
