@@ -34,6 +34,8 @@ public:
   BigNumber ();  // default constructor
   BigNumber (const char * s);   // constructor from string
   BigNumber (const int n);  // constructor from int
+  BigNumber (const uint32_t n);  // constructor from int
+  BigNumber (const uint16_t n);  // constructor from int
   // copy constructor
   BigNumber (const BigNumber & rhs); 
  
@@ -48,6 +50,8 @@ public:
   // for outputting purposes ...
   char * toString () const;  // returns number as string, MUST FREE IT after use!
   operator long () const;
+  operator uint32_t () const;
+  operator uint16_t () const;
   virtual size_t printTo(Print& p) const; // for Arduino Serial.print()
 
   // operators ... assignment

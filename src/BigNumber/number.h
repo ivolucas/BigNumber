@@ -89,6 +89,14 @@ typedef struct bc_struct
 #define LONG_MAX 0x7ffffff
 #endif
 
+#ifndef ULONG_MAX
+#define ULONG_MAX 0xfffffff
+#endif
+
+#ifndef UINT_MAX
+#define UINT_MAX 0xffff
+#endif
+
 
 /* Global numbers. */
 extern bc_num _zero_;
@@ -122,7 +130,15 @@ _PROTOTYPE(char *bc_num2str, (bc_num num));
 
 _PROTOTYPE(void bc_int2num, (bc_num *num, int val));
 
+_PROTOTYPE(void bc_ulong2num, (bc_num *num, uint32_t val));
+
+_PROTOTYPE(void bc_uint162num, (bc_num *num, uint16_t val));
+
 _PROTOTYPE(long bc_num2long, (bc_num num));
+
+_PROTOTYPE(uint32_t bc_num2ulong, (bc_num num));
+
+_PROTOTYPE(uint16_t bc_num2uint16, (bc_num num));
 
 _PROTOTYPE(int bc_compare, (bc_num n1, bc_num n2));
 
@@ -156,6 +172,7 @@ _PROTOTYPE(int bc_sqrt, (bc_num *num, int scale));
 
 _PROTOTYPE(void bc_out_num, (bc_num num, int o_base, void (* out_char)(int),
 			     int leading_zero));
+
 
 #endif
 

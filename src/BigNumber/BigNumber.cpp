@@ -30,6 +30,16 @@ BigNumber::BigNumber (const int n) : num_ (NULL)  // constructor from int
   bc_int2num (&num_, n);
 } // end of constructor from int
 
+BigNumber::BigNumber (const uint32_t n) : num_ (NULL)  
+{
+  bc_ulong2num (&num_, n);
+} 
+
+BigNumber::BigNumber (const uint16_t n) : num_ (NULL) 
+{
+  bc_uint162num (&num_, n);
+} 
+
 // copy constructor
 BigNumber::BigNumber (const BigNumber & rhs)
   {
@@ -95,6 +105,16 @@ BigNumber::operator long () const
 {
   return bc_num2long (num_);
 } // end of BigNumber::operator long
+
+BigNumber::operator uint32_t () const
+{
+  return bc_num2ulong (num_);
+} // end of BigNumber::operator uint32_t 
+
+BigNumber::operator uint16_t () const
+{
+  return bc_num2uint16 (num_);
+} // end of BigNumber::operator uint32_t 
 
 // Allow Arduino's Serial.print() to print BigNumber objects!
 size_t BigNumber::printTo(Print& p) const

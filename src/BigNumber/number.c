@@ -1349,6 +1349,50 @@ long bc_num2long (bc_num num){
     return (-val);
 }
 
+/* Convert a number NUM to a uint32_t (unsigned long) .  The function returns only the integer
+   part of the number.  For numbers that are too large to represent as
+   a ulong, this function returns a zero.  This can be detected by checking
+   the NUM for zero after having a zero returned. */
+
+uint32_t bc_num2ulong (bc_num num){
+  uint32_t  val;
+  char *nptr;
+  int  index;
+
+  /* Extract the int value, ignore the fraction. */
+  val = 0;
+  nptr = num->n_value;
+  for (index=num->n_len; (index>0) && (val<=(ULONG_MAX/BASE)); index--)
+    val = val*BASE + *nptr++;
+
+  /* Check for overflow.  If overflow, return zero. */
+  if (index>0) val = 0;
+
+    return (val);
+}
+
+/* Convert a number NUM to a uint16_t (unsigned int) .  The function returns only the integer
+   part of the number.  For numbers that are too large to represent as
+   a ulong, this function returns a zero.  This can be detected by checking
+   the NUM for zero after having a zero returned. */
+
+uint16_t bc_num2uint16 (bc_num num){
+  uint16_t  val;
+  char *nptr;
+  int  index;
+
+  /* Extract the int value, ignore the fraction. */
+  val = 0;
+  nptr = num->n_value;
+  for (index=num->n_len; (index>0) && (val<=(UINT_MAX/BASE)); index--)
+    val = val*BASE + *nptr++;
+
+  /* Check for overflow.  If overflow, return zero. */
+  if (index>0) val = 0;
+
+  /* Return the value. */
+ return (val);
+}
 
 /* Convert an integer VAL to a bc number NUM. */
 
@@ -1365,6 +1409,72 @@ void bc_int2num (bc_num *num, int val)
       neg = 1;
       val = -val;
     }
+
+  /* Get things going. */
+  bptr = buffer;
+  *bptr++ = val % BASE;
+  val = val / BASE;
+
+  /* Extract remaining digits. */
+  while (val != 0)
+    {
+      *bptr++ = val % BASE;
+      val = val / BASE;
+      ix++;             /* Count the digits. */
+    }
+
+  /* Make the number. */
+  bc_free_num (num);
+  *num = bc_new_num (ix, 0);
+  if (neg) (*num)->n_sign = MINUS;
+
+  /* Assign the digits. */
+  vptr = (*num)->n_value;
+  while (ix-- > 0)
+    *vptr++ = *--bptr;
+}
+
+/* Convert an uint32_t (ulong)  VAL to a bc number NUM. */
+
+void bc_ulong2num (bc_num *num, uint32_t val)
+{
+  char buffer[30];
+  char *bptr, *vptr;
+  int  ix = 1;
+  char neg = 0;
+
+  /* Get things going. */
+  bptr = buffer;
+  *bptr++ = val % BASE;
+  val = val / BASE;
+
+  /* Extract remaining digits. */
+  while (val != 0)
+    {
+      *bptr++ = val % BASE;
+      val = val / BASE;
+      ix++;             /* Count the digits. */
+    }
+
+  /* Make the number. */
+  bc_free_num (num);
+  *num = bc_new_num (ix, 0);
+  if (neg) (*num)->n_sign = MINUS;
+
+  /* Assign the digits. */
+  vptr = (*num)->n_value;
+  while (ix-- > 0)
+    *vptr++ = *--bptr;
+}
+
+/* Convert an uint16_t (uint)  VAL to a bc number NUM. */
+
+void bc_uint162num (bc_num *num, uint16_t val)
+{
+  char buffer[30];
+  char *bptr, *vptr;
+  int  ix = 1;
+  char neg = 0;
 
   /* Get things going. */
   bptr = buffer;
@@ -1444,7 +1554,7 @@ void bc_str2num (bc_num *num, const char *str, int scale)
   strscale = 0;
   zero_int = FALSE;
   if ( (*ptr == '+') || (*ptr == '-'))  ptr++;  /* Sign */
-  while (*ptr == '0') ptr++;                    /* Skip leading zeros. */
+  while (*ptr == '0' || *ptr == ' ' ) ptr++;    /* Skip leading zeros and spaces. */
   while (isdigit((int)*ptr)) ptr++, digits++;   /* digits */
   if (*ptr == '.') ptr++;                       /* decimal point */
   while (isdigit((int)*ptr)) ptr++, strscale++; /* digits */
@@ -1475,7 +1585,7 @@ void bc_str2num (bc_num *num, const char *str, int scale)
       (*num)->n_sign = PLUS;
       if (*ptr == '+') ptr++;
     }
-  while (*ptr == '0') ptr++;                    /* Skip leading zeros. */
+  while (*ptr == '0' || *ptr == ' ') ptr++; /* Skip leading zeros and spaces. */
   nptr = (*num)->n_value;
   if (zero_int)
     {
